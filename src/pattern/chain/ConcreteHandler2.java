@@ -1,10 +1,10 @@
-package pattern.chain_of_responsibility;
+package pattern.chain;
 
-public class ConcreteHandler1 extends Handler {
+public class ConcreteHandler2 extends Handler {
     @Override
     public void handleRequest(String request) {
-        if("one".equals(request)){
-            System.out.println("ConcreteHandler1 handleRequest : "+request);
+        if("two".equals(request)){
+            System.out.println("ConcreteHandler2 handleRequest : "+request);
         }else {
             if(getNext()!=null){
                 getNext().handleRequest(request);

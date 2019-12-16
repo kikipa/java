@@ -1,4 +1,4 @@
-package pattern.chain_of_responsibility;
+package pattern.chain;
 
 public class ChainOfResponsibilityPattern {
     public static void main(String[] args) {
