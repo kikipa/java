@@ -13,10 +13,11 @@ import java.util.ArrayList;
  * -Xmx512m -server -Xloggc:gc.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=D:\tmp\dump1.hprof
  */
 public class OutOfMemoryDemo {
-    static ArrayList<Object> space = new ArrayList<Object>();
+//    static ArrayList<Object> space = new ArrayList<Object>();
     public static void main(String[] args) throws InterruptedException {
         for(int i=0;i<1000;i++){
-            space.add(new byte[1024*1024*64]);
+//            space.add(new byte[1024*1024*64]);
+            byte[] space = new byte[1024*1024*64];
             Thread.sleep(500L);
         }
     }
