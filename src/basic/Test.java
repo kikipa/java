@@ -1,5 +1,7 @@
 package basic;
 
+import java.util.HashMap;
+
 /**
  * @description:
  * @author: za-hejin
@@ -7,6 +9,7 @@ package basic;
  */
 public class Test {
     public static void main(String[] args) {
+
         String val = "3.765";
         Float f = 0f;
         f = Float.parseFloat(val);
