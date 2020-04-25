@@ -1,7 +1,6 @@
-package threads.leecode;
+package leetcode.threads;
 
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @description:

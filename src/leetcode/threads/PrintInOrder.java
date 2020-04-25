@@ -1,4 +1,4 @@
-package threads.leecode;
+package leetcode.threads;
 
 /**
  * 我们提供了一个类：

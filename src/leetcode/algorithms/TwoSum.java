@@ -1,7 +1,6 @@
-package algorithms.basic.leetcode;
+package leetcode.algorithms;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class TwoSum {
 

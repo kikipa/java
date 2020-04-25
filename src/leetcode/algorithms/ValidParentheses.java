@@ -1,4 +1,4 @@
-package algorithms.basic.leetcode;
+package leetcode.algorithms;
 
 import java.util.Stack;
 

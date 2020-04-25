@@ -1,4 +1,4 @@
-package threads.leecode;
+package leetcode.threads;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
