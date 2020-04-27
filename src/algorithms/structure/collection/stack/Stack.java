@@ -4,11 +4,11 @@ import java.util.Iterator;
 
 public class Stack<T> implements Iterable<T> {
 
-    Stack(){
+    public Stack(){
 
     }
 
-    void push(T t){
+    public void push(T t){
 
     }
 
