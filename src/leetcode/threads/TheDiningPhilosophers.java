@@ -3,16 +3,19 @@ package leetcode.threads;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
  * 5 个沉默寡言的哲学家围坐在圆桌前，每人面前一盘意面。叉子放在哲学家之间的桌面上。（5 个哲学家，5 根叉子）
  *
- * 所有的哲学家都只会在思考和进餐两种行为间交替。哲学家只有同时拿到左边和右边的叉子才能吃到面，而同一根叉子在同一时间只能被一个哲学家使用。每个哲学家吃完面后都需要把叉子放回桌面以供其他哲学家吃面。只要条件允许，哲学家可以拿起左边或者右边的叉子，但在没有同时拿到左右叉子时不能进食。
+ * 所有的哲学家都只会在思考和进餐两种行为间交替。哲学家只有同时拿到左边和右边的叉子才能吃到面，而同一根叉子在同一时间只能被一个哲学家使用。
+ * 每个哲学家吃完面后都需要把叉子放回桌面以供其他哲学家吃面。只要条件允许，哲学家可以拿起左边或者右边的叉子，但在没有同时拿到左右叉子时不能进食。
  *
  * 假设面的数量没有限制，哲学家也能随便吃，不需要考虑吃不吃得下。
  *
@@ -53,85 +56,226 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class TheDiningPhilosophers {
     public static void main(String[] args) {
+        DiningPhilosopher diningPhilosopher = new DiningPhilosopher();
 
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(5,5,60, TimeUnit.SECONDS,new LinkedBlockingQueue<>());
-        for(int i=0;i<5;i++){
-            DiningPhilosophers diningPhilosophers = new DiningPhilosophers(1);
-            executor.submit(new Runnable() {
+//        ThreadPoolExecutor executor = new ThreadPoolExecutor(5,5,10, TimeUnit.SECONDS,new LinkedBlockingQueue<>());
+//        for(int i=0;i<5;i++){
+//            int philosopher = i;
+//            executor.submit(new Runnable() {
+//                @Override
+//                public void run() {
+//                    diningPhilosopher.wantsToEat(philosopher,
+//                            ()-> System.out.print("["+philosopher+",1,1]"),
+//                            ()->System.out.print("["+philosopher+",2,1]"),
+//                            ()->System.out.print("["+philosopher+",0,3]"),
+//                            ()->System.out.print("["+philosopher+",1,2]"),
+//                            ()->System.out.print("["+philosopher+",2,2]"));
+//                }
+//            });
+//        }
+
+        //模拟参数输入
+        args = new String[1];
+        args[0] = "30";
+
+
+        for(int j=0; j<5; j++){
+            int philosopher = j;
+            int n = Integer.parseInt(args[0]);
+            new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        diningPhilosophers.wantsToEat(0,
-                                ()-> System.out.print("["+0+"1,1]"),
-                                ()->{},
-                                ()->{},
-                                ()->{},
-                                ()->{});
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    for(int i=0; i<n; i++){
+                        diningPhilosopher.wantsToEat(philosopher,
+                                ()-> System.out.print("["+philosopher+",1,1]"),
+                                ()->System.out.print("["+philosopher+",2,1]"),
+                                ()->System.out.print("["+philosopher+",0,3]"),
+                                ()->System.out.print("["+philosopher+",1,2]"),
+                                ()->System.out.print("["+philosopher+",2,2]"));
                     }
                 }
-            });
+            }).start();
         }
+
     }
 }
 
-class DiningPhilosophers {
-    int n;
-    List<ReentrantLock> forkLocks;
-    List<Condition> leftConditions;
-    List<Condition> rightConditions;
 
-    public int getN(){
-        return n;
-    }
+class DiningPhilosopher{
 
-    public DiningPhilosophers(int n) {
-        this.n = n;
-        forkLocks = new ArrayList<>();
-        forkLocks.add(new ReentrantLock());
-        forkLocks.add(new ReentrantLock());
-        forkLocks.add(new ReentrantLock());
-        forkLocks.add(new ReentrantLock());
-        forkLocks.add(new ReentrantLock());
+    /**
+     * 5个叉子的锁，索引从0-4，
+     * 约定对应哲学家编号0-4的索引的叉子为该哲学家左手边的叉子
+     * */
+    Lock[] forkLocks = new Lock[5];
 
-        leftConditions = new ArrayList<>();
-        rightConditions = new ArrayList<>();
-        for(int i=0;i<forkLocks.size();i++){
-            leftConditions.add(forkLocks.get(i).newCondition());
-            if(i==forkLocks.size()){
-                leftConditions.add(forkLocks.get(0).newCondition());
-            }else {
-                leftConditions.add(forkLocks.get(i+1).newCondition());
-            }
+//    Semaphore[] forkLocks = new Semaphore[5];
+
+    DiningPhilosopher(){
+        for(int i = 0; i< 5; i++){
+//            forkLocks[i] = new Semaphore(1);
+            forkLocks[i] = new ReentrantLock();
         }
     }
 
-    // call the run() method of any runnable to execute its code
-    public void wantsToEat(int philosopher,
-                           Runnable pickLeftFork,
-                           Runnable pickRightFork,
-                           Runnable eat,
-                           Runnable putLeftFork,
-                           Runnable putRightFork) throws InterruptedException {
-        for(int i=0;i<n;i++){
-            boolean eaten = false;
-            while (!eaten){
-                ReentrantLock leftLock = forkLocks.get(philosopher);
-                ReentrantLock rightLock = forkLocks.get(philosopher+1);
-                if(leftLock.tryLock()){
-                    pickLeftFork.run();
-                    eat.run();
-                    putLeftFork.run();
-                    leftLock.unlock();
-                }else if(rightLock.tryLock()){
-                    pickRightFork.run();
-                    eat.run();
-                    putRightFork.run();
-                    rightLock.unlock();
+
+    void wantsToEat(int philosopher, Runnable pickLeftFork, Runnable pickRightFork, Runnable eat, Runnable putLeftFork, Runnable putRightFork){
+        for(;;){
+            //尝试拿起左手边叉子
+            boolean leftPicked = forkLocks[philosopher].tryLock();
+            //尝试拿起右手边叉子
+            boolean rightPicked = forkLocks[philosopher+1==5?0:philosopher+1].tryLock();
+            if(leftPicked&&rightPicked){
+                pickLeftFork.run();
+                pickRightFork.run();
+                break;
+            }else {
+                if(leftPicked){
+                    //没拿到右手边叉子，则放下拿到的左手边叉子
+                    forkLocks[philosopher].unlock();
+                }
+                if(rightPicked){
+                    //没拿到左手边叉子，则放下拿到的右手边叉子
+                    forkLocks[philosopher+1==5?0:philosopher+1].unlock();
                 }
             }
         }
 
+        //吃面
+        eat.run();
+
+        //放下左手边叉子
+        forkLocks[philosopher].unlock();
+        putLeftFork.run();
+
+        //放下右手边叉子
+        forkLocks[philosopher+1==5?0:philosopher+1].unlock();
+        putRightFork.run();
     }
+
+
+//    void wantsToEat(int philosopher, Runnable pickLeftFork, Runnable pickRightFork, Runnable eat, Runnable putLeftFork, Runnable putRightFork){
+//        while(times[philosopher]>0){
+//            //尝试拿起左手边叉子
+//            boolean leftPicked = forkLocks[philosopher].tryAcquire(1);
+//            //尝试拿起右手边叉子
+//            boolean rightPicked = forkLocks[philosopher+1==5?0:philosopher+1].tryAcquire(1);
+//            if(leftPicked&&rightPicked){
+//                pickLeftFork.run();
+//                pickRightFork.run();
+//            }else {
+//                if(leftPicked){
+//                    //没拿到右手边叉子，则放下拿到的左手边叉子
+//                    forkLocks[philosopher].release();
+//                }
+//                if(rightPicked){
+//                    //没拿到左手边叉子，则放下拿到的右手边叉子
+//                    forkLocks[philosopher+1==5?0:philosopher+1].release();
+//                }
+//                continue;
+//            }
+//
+//            //吃面
+//            eat.run();
+//            //该哲学家剩余吃面次数减1
+//            times[philosopher]--;
+//
+//            //放下左手边叉子
+//            forkLocks[philosopher].release();
+//            putLeftFork.run();
+//
+//            //放下右手边叉子
+//            forkLocks[philosopher+1==5?0:philosopher+1].release();
+//            putRightFork.run();
+//        }
+//    }
+
+
+//    void wantsToEat(int philosopher, Runnable pickLeftFork, Runnable pickRightFork, Runnable eat, Runnable putLeftFork, Runnable putRightFork){
+//        while(n>0){
+//            //拿起左手边叉子，拿不到叉子则一直等待
+//            forkLocks[philosopher].lock();
+//            pickLeftFork.run();
+//
+//            //拿起右手边叉子，拿不到叉子则一直等待，且不会释放已拿到的左手的叉子(会产生死锁)
+//            forkLocks[philosopher+1==5?0:philosopher+1].lock();
+//            pickRightFork.run();
+//
+//            //吃面
+//            eat.run();
+//            //剩余吃面次数减1
+//            n--;
+//
+//            //放下左手边叉子
+//            forkLocks[philosopher].unlock();
+//            putLeftFork.run();
+//
+//            //放下右手边叉子
+//            forkLocks[philosopher+1==5?0:philosopher+1].unlock();
+//            putRightFork.run();
+//        }
+//    }
+
 }
+
+
+
+//class DiningPhilosophers {
+//    int n;
+//    List<ReentrantLock> forkLocks;
+//    List<Condition> leftConditions;
+//    List<Condition> rightConditions;
+//
+//    public int getN(){
+//        return n;
+//    }
+//
+//    public DiningPhilosophers(int n) {
+//        this.n = n;
+//        forkLocks = new ArrayList<>();
+//        forkLocks.add(new ReentrantLock());
+//        forkLocks.add(new ReentrantLock());
+//        forkLocks.add(new ReentrantLock());
+//        forkLocks.add(new ReentrantLock());
+//        forkLocks.add(new ReentrantLock());
+//
+//        leftConditions = new ArrayList<>();
+//        rightConditions = new ArrayList<>();
+//        for(int i=0;i<forkLocks.size();i++){
+//            leftConditions.add(forkLocks.get(i).newCondition());
+//            if(i==forkLocks.size()){
+//                leftConditions.add(forkLocks.get(0).newCondition());
+//            }else {
+//                leftConditions.add(forkLocks.get(i+1).newCondition());
+//            }
+//        }
+//    }
+//
+//    // call the run() method of any runnable to execute its code
+//    public void wantsToEat(int philosopher,
+//                           Runnable pickLeftFork,
+//                           Runnable pickRightFork,
+//                           Runnable eat,
+//                           Runnable putLeftFork,
+//                           Runnable putRightFork) throws InterruptedException {
+//        for(int i=0;i<n;i++){
+//            boolean eaten = false;
+//            while (!eaten){
+//                ReentrantLock leftLock = forkLocks.get(philosopher);
+//                ReentrantLock rightLock = forkLocks.get(philosopher+1);
+//                if(leftLock.tryLock()){
+//                    pickLeftFork.run();
+//                    eat.run();
+//                    putLeftFork.run();
+//                    leftLock.unlock();
+//                }else if(rightLock.tryLock()){
+//                    pickRightFork.run();
+//                    eat.run();
+//                    putRightFork.run();
+//                    rightLock.unlock();
+//                }
+//            }
+//        }
+//
+//    }
+//}

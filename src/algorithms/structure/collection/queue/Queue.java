@@ -4,19 +4,19 @@ import java.util.Iterator;
 
 public class Queue<T> implements Iterable<T> {
 
-    Queue(){
+    public Queue(){
 
     }
 
-    void enqueue(T t){
+    public void enqueue(T t){
 
     }
 
-    T dequeue(){
+    public T dequeue(){
         return null;
     }
 
-    boolean isEmpty(){
+    public boolean isEmpty(){
         return false;
     }
 
