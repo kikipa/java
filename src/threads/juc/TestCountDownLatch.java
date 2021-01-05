@@ -2,7 +2,6 @@ package threads.juc;
 
 import java.util.concurrent.CountDownLatch;
 
-import static sun.misc.PostVMInitHook.run;
 
 public class TestCountDownLatch {
     public static void main(String[] args) throws InterruptedException {
