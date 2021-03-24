@@ -1,6 +1,7 @@
 package other;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +17,12 @@ public class MapToListTest {
   public static void main(String[] args) {
     // 遍历带有DomainStorageStrategy注释的类
     Map<String,String> beans = new HashMap<>();
-    beans.put("3", "3");
-    beans.put("1", "1");
-    beans.put("6", "6");
-    beans.put("2", "2");
-    beans.put("5", "5");
-    beans.put("9", "9");
+    beans.put("3", "33");
+    beans.put("1", "11");
+    beans.put("6", "66");
+    beans.put("2", "22");
+    beans.put("5", "55");
+    beans.put("9", "99");
 
     for (String serviceBean : beans.values()) {
       System.out.println(serviceBean);
@@ -29,6 +30,17 @@ public class MapToListTest {
 
     System.out.println("-------------");
 
+    List<String> list = beans.entrySet().stream().sorted((o1,o2)->{
+      return Integer.parseInt(o2.getValue()) - Integer.parseInt(o1.getValue());
+    }).map(x->{
+      return x.getValue();
+    }).collect(Collectors.toList());
+
+    for (String serviceBean : list) {
+      System.out.println(serviceBean);
+    }
+
+    System.out.println("-------------");
 
     Map<String,String> sortedMap = new TreeMap<>((o1,o2)->{
       return Integer.parseInt(o2) - Integer.parseInt(o1);
@@ -40,11 +52,11 @@ public class MapToListTest {
 //      return Integer.parseInt(o1) - Integer.parseInt(o2);
 //    }).collect(Collectors.toList());
 //
-    List<String> list= new ArrayList<>();
+    List<String> beanList= new ArrayList<>();
     for (String serviceBean : sortedMap.values()) {
-      list.add(serviceBean);
+      beanList.add(serviceBean);
     }
-    list.forEach(x->{
+    beanList.forEach(x->{
       System.out.println(x);
     });
 
