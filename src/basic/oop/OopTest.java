@@ -17,6 +17,9 @@ public class OopTest {
     o1.print();
     o2.print();
 
+    Integer f1 =150, f2=150, f3=100, f4=100;
+    System.out.println(f1==f2);
+    System.out.println(f3==f4);
 
   }
 }
