@@ -21,11 +21,11 @@ public class MapTest {
 //    Long times = 1000L;
 //    Long size = 10000L;
 
-    Long times = 1000L;
-    Long size = 100000L;
-
 //    Long times = 1000L;
-//    Long size = 1000000L;
+//    Long size = 100000L;
+
+    Long times = 1000L;
+    Long size = 1000000L;
 
 //    mapTest(new HashMap<>(), size, times);
     mapTest(new ConcurrentHashMap<>(), size, times);
@@ -62,14 +62,16 @@ public class MapTest {
     System.out.println("avg single remove time: " + removeAvg/size + "ns");
   }
 
-  static void mapTest(Map<Long, String> map, Long size, Long times){
+  static void mapTest(Map<String, String> map, Long size, Long times){
     Random ran = new Random();
-    List<Long> keyList = new ArrayList<>();
+//    List<Long> keyList = new ArrayList<>();
+    List<String> keyList = new ArrayList<>();
     List<String> valueList = new ArrayList<>();
 //    Map<Long, String> hashMap = new HashMap<>();
     for(int i=0; i<size; i++){
       Long num = ran.nextLong();
-      keyList.add(num);
+//      keyList.add(num);
+      keyList.add(num+"-key");
       valueList.add("str-"+num);
     }
 
