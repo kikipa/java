@@ -19,8 +19,8 @@ public class BPlusTreeTest {
     public static void main(String[] args) throws IOException {
 //        test1();
 //        test2(10000);
-        test2(40000);
-//        test2(1000000);
+//        test2(100000);
+        test2(1000000);
 //        test2(10000000);
 
     }
@@ -28,7 +28,7 @@ public class BPlusTreeTest {
     private static void test2(int times){
 
         // Create initial B+ tree
-        BPlustTreeFinal bpt = new  BPlustTreeFinal(10);
+        BPlusTree bpt = new BPlusTree(10);
 
         long t1 = System.nanoTime();
         for(int i=0; i< times; i++){
@@ -96,7 +96,7 @@ public class BPlusTreeTest {
             boolean firstLine = true;
 
             // Create initial B+ tree
-            BPlustTreeFinal bpt = null;
+            BPlusTree bpt = null;
 
             // Perform an operation for each line in the input file
             while (sc.hasNextLine()) {
@@ -107,7 +107,7 @@ public class BPlusTreeTest {
 
                     // Initializes an m-order B+ tree
                     case "Initialize":
-                        bpt = new BPlustTreeFinal(Integer.parseInt(tokens[1]));
+                        bpt = new BPlusTree(Integer.parseInt(tokens[1]));
                         break;
 
                     // Insert a dictionary pair into the B+ tree
