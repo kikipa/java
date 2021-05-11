@@ -18,29 +18,30 @@ public class BPlusTreeTest {
 
     public static void main(String[] args) throws IOException {
 //        test1();
-//        test2(10000);
+        test(10000);
 //        test2(100000);
-        test2(1000000);
+//        test(1000000);
 //        test2(10000000);
 
     }
 
-    private static void test2(int times){
+    private static void test(int times){
 
         // Create initial B+ tree
-        BPlusTree bpt = new BPlusTree(10);
+        BPlusTree bpt = new BPlusTree(3);
+//        algorithms.structure.tree.bplus.tmp.BPlusTree bpt = new algorithms.structure.tree.bplus.tmp.BPlusTree(3);
+
+        Random ran = new Random();
+        List<Integer> keys = new ArrayList<>();
+        for(int i=0; i<times; i++){
+            keys.add(ran.nextInt());
+        }
 
         long t1 = System.nanoTime();
         for(int i=0; i< times; i++){
-            bpt.insert(i, i);
+            bpt.insert(keys.get(i), i);
         }
         long t2 = System.nanoTime();
-
-        Random ran = new Random();
-        List<Long> keys = new ArrayList<>();
-        for(int i=0; i<times; i++){
-            keys.add(ran.nextLong());
-        }
 
         long t3 = System.nanoTime();
         for(int i=0; i<times; i++){
@@ -48,22 +49,21 @@ public class BPlusTreeTest {
         }
         long t4 = System.nanoTime();
 
-        List<Long> keys2 = new ArrayList<>();
+        List<Integer> keys2 = new ArrayList<>();
         for(int i=0; i<times; i++){
-            keys2.add(keys.get(i) + ran.nextInt(10000));
+            keys2.add(keys.get(i) + 1000);
         }
 
         long t5 = System.nanoTime();
         for(int i=0; i<times; i++){
-//            bpt.search(keys.get(i), keys2.get(i));
-            bpt.search2(keys.get(i), keys2.get(i));
+            bpt.search(keys.get(i), keys2.get(i));
         }
         long t6 = System.nanoTime();
 
 
         long t7 = System.nanoTime();
         for(int i=0; i<times; i++){
-            bpt.delete(keys.get(i));
+//            bpt.delete(keys.get(i));
         }
         long t8 = System.nanoTime();
 
